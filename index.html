@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catherine Cook School</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="nav-container">
+                <div class="logo">
+                    <img src="logo.png" alt="Catherine Cook School" class="logo-img">
+                    <h1>Catherine Cook School</h1>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="#home" class="nav-link active">Home</a></li>
+                    <li><a href="about.html" class="nav-link">About</a></li>
+                    <li><a href="#events" class="nav-link">Events</a></li>
+                    <li><a href="#" id="logout-btn" class="nav-link logout-link">Logout</a></li>
+                </ul>
+                <div class="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Home Section -->
+        <section id="home" class="section active">
+            <div class="hero">
+                <h2>Welcome to Catherine Cook School</h2>
+                <p>Excellence in Education Since 1889</p>
+            </div>
+            
+            <div class="container">
+                <div class="news-section">
+                    <h3>Latest News & Announcements</h3>
+                    <div id="news-container" class="news-grid">
+                        <div class="loading">Loading news...</div>
+                    </div>
+                    <div class="view-all-news">
+                        <a href="#" id="view-all-news" class="btn-secondary">View All News</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Events Section -->
+        <section id="events" class="section">
+            <div class="container">
+                <h2>Upcoming Events</h2>
+                <div id="events-container" class="events-grid">
+                    <div class="loading">Loading events...</div>
+                </div>
+            </div>
+        </section>
+
+
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Catherine Cook School. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="config.js"></script>
+    <script src="auth.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

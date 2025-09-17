@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - Catherine Cook School</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="login-page">
+    <div class="login-container">
+        <div class="login-card admin-login-card">
+            <div class="logo-section">
+                <img src="logo.png" alt="Catherine Cook School" class="logo-img large">
+                <h1>Catherine Cook School</h1>
+                <p class="login-subtitle">Administrator Access Portal</p>
+            </div>
+            
+            <form id="admin-login-form" class="login-form">
+                <div class="form-group">
+                    <label for="admin-username">Administrator Username</label>
+                    <input type="text" id="admin-username" name="username" required placeholder="Enter admin username">
+                </div>
+                
+                <div class="form-group">
+                    <label for="admin-password">Password</label>
+                    <input type="password" id="admin-password" name="password" required placeholder="Enter admin password">
+                </div>
+                
+                <button type="submit" class="login-btn admin-btn">Access Admin Panel</button>
+            </form>
+            
+            <div class="login-footer">
+                <p><a href="login.html" class="switch-login">Regular User Login</a></p>
+                <div class="demo-credentials">
+                    <p><strong>Demo Admin Credentials:</strong></p>
+                    <p>Username: admin</p>
+                    <p>Password: admin2025</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="config.js"></script>
+    <script>
+        // Admin login form handler
+        document.getElementById('admin-login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('admin-username').value;
+            const password = document.getElementById('admin-password').value;
+            
+            // Simple demo authentication (replace with real auth in production)
+            if (username === 'admin' && password === 'admin2025') {
+                // Store admin login status
+                localStorage.setItem('adminLoggedIn', 'true');
+                localStorage.setItem('adminLoginTime', new Date().getTime());
+                localStorage.setItem('userType', 'admin');
+                
+                showMessage('Admin login successful! Redirecting...', 'success');
+                
+                // Redirect to admin page after 1 second
+                setTimeout(() => {
+                    window.location.href = 'admin.html';
+                }, 1000);
+            } else {
+                showMessage('Invalid admin credentials!', 'error');
+            }
+        });
+        
+        // Check if already logged in as admin
+        if (localStorage.getItem('adminLoggedIn') === 'true' && localStorage.getItem('userType') === 'admin') {
+            const loginTime = localStorage.getItem('adminLoginTime');
+            const currentTime = new Date().getTime();
+            
+            // Session expires after 2 hours (7200000 ms)
+            if (currentTime - loginTime < 7200000) {
+                window.location.href = 'admin.html';
+            } else {
+                localStorage.clear();
+            }
+        }
+        
+        // Show success/error messages
+        function showMessage(text, type) {
+            const existingMessages = document.querySelectorAll('.message');
+            existingMessages.forEach(msg => msg.remove());
+            
+            const message = document.createElement('div');
+            message.className = `message ${type}`;
+            message.textContent = text;
+            
+            const loginCard = document.querySelector('.login-card');
+            loginCard.insertBefore(message, loginCard.firstChild);
+            
+            setTimeout(() => {
+                message.remove();
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

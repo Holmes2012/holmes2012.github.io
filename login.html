@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student/Staff Login - Catherine Cook School</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="login-page">
+    <div class="login-container">
+        <div class="login-card">
+            <div class="logo-section">
+                <img src="logo.png" alt="Catherine Cook School" class="logo-img large">
+                <h1>Catherine Cook School</h1>
+                <p class="login-subtitle">Student & Staff Portal</p>
+            </div>
+            
+            <form id="login-form" class="login-form">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" required placeholder="Enter your username">
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required placeholder="Enter your password">
+                </div>
+                
+                <button type="submit" class="login-btn">Access Portal</button>
+            </form>
+            
+            <div class="login-footer">
+                <p><a href="adminlogin.html" class="switch-login">Administrator Login</a></p>
+                <div class="demo-credentials">
+                    <p><strong>Demo Credentials:</strong></p>
+                    <p>Username: student</p>
+                    <p>Password: student2025</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="config.js"></script>
+    <script>
+        // Login form handler
+        document.getElementById('login-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            try {
+                // First check built-in demo accounts
+                if (username === 'student' && password === 'student2025') {
+                    loginUser('student', 'student', 'Demo Student');
+                    return;
+                }
+                
+                // Check if user exists in database
+                const user = await authenticateUser(username, password);
+                if (user) {
+                    loginUser(user.username, user.role, user.full_name);
+                    return;
+                }
+                
+                // Check locally stored users (fallback)
+                const localUser = checkLocalUser(username, password);
+                if (localUser) {
+                    loginUser(localUser.username, localUser.role, localUser.full_name);
+                    return;
+                }
+                
+                showMessage('Invalid username or password!', 'error');
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                showMessage('Login error. Please try again.', 'error');
+            }
+        });
+
+        // Authenticate user against database
+        async function authenticateUser(username, password) {
+            try {
+                const { data: users, error } = await supabase
+                    .from('users')
+                    .select('*')
+                    .eq('username', username)
+                    .single();
+                
+                if (error) return null;
+                
+                // Check password (in production, use proper password hashing)
+                if (users && atob(users.password_hash) === password) {
+                    return users;
+                }
+                
+                return null;
+            } catch (error) {
+                console.error('Database authentication error:', error);
+                return null;
+            }
+        }
+
+        // Check locally stored users
+        function checkLocalUser(username, password) {
+            const localUsers = JSON.parse(localStorage.getItem('localUsers') || '[]');
+            return localUsers.find(user => 
+                user.username === username && 
+                (atob(user.password_hash) === password || user.password === password)
+            );
+        }
+
+        // Login user and redirect
+        function loginUser(username, role, fullName) {
+            localStorage.setItem('userLoggedIn', 'true');
+            localStorage.setItem('userLoginTime', new Date().getTime());
+            localStorage.setItem('userType', role);
+            localStorage.setItem('currentUser', JSON.stringify({
+                username: username,
+                role: role,
+                fullName: fullName
+            }));
+            
+            showMessage('Login successful! Redirecting...', 'success');
+            
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 1000);
+        }
+        
+        // Check if already logged in
+        if (localStorage.getItem('userLoggedIn') === 'true' && localStorage.getItem('userType') === 'student') {
+            const loginTime = localStorage.getItem('userLoginTime');
+            const currentTime = new Date().getTime();
+            
+            // Session expires after 2 hours (7200000 ms)
+            if (currentTime - loginTime < 7200000) {
+                window.location.href = 'index.html';
+            } else {
+                localStorage.clear();
+            }
+        }
+        
+        // Show success/error messages
+        function showMessage(text, type) {
+            const existingMessages = document.querySelectorAll('.message');
+            existingMessages.forEach(msg => msg.remove());
+            
+            const message = document.createElement('div');
+            message.className = `message ${type}`;
+            message.textContent = text;
+            
+            const loginCard = document.querySelector('.login-card');
+            loginCard.insertBefore(message, loginCard.firstChild);
+            
+            setTimeout(() => {
+                message.remove();
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
